@@ -3,5 +3,11 @@
         "nome": "leite jussara",
         "quantidade": 2,
         "local": "Prateleira A3"
+    },
+    "1234": {
+        "nome": "FARINHA DE MILHO",
+        "quantidade": 3,
+        "local": "PRATELEIRA B4",
+        "unidade": "KG"
     }
 }

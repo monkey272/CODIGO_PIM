@@ -1,9 +1,11 @@
 import json
 import os
+import shutil
 
 # Nome do arquivo onde os dados serão salvos
 ARQUIVO = "estoque.json"
 
+from datetime import datetime
 # -------- Funções de persistência --------
 def carregar_estoque():
     if os.path.exists(ARQUIVO):
@@ -26,10 +28,12 @@ def cadastrar_produto():
         return
     
     nome = input("Digite o nome do produto: ")
-    quantidade = int(input("Digite a quantidade inicial: "))
+    qtd_numero = input("Digite a quantidade Inicial (número): ")
+    qtd_unidade = input("Digite a unidade de medida (ex: kg, un): ")
+    quantidade = int(qtd_numero if qtd_numero.isdigit() else 0)
     local = input("Digite a localização (ex: Prateleira A1): ")
-    
-    estoque[codigo] = {"nome": nome, "quantidade": quantidade, "local": local}
+
+    estoque[codigo] = {"nome": nome, "quantidade": quantidade, "local": local, "unidade": qtd_unidade}
     salvar_estoque()
     print(f"✅ Produto {nome} cadastrado com sucesso!")
 
@@ -57,6 +61,11 @@ def registrar_saida():
             print("⚠️ Estoque insuficiente.")
     else:
         print("⚠️ Produto não encontrado.")
+
+def registrar_log(acao, produto=""):
+    with open("log.txt", "a", encoding="utf-8") as f:
+        f.write(f"{datetime.now()} - {acao} - {produto}\n")
+
 
 
 def consultar_estoque():
@@ -86,9 +95,33 @@ def editar_produto():
         salvar_estoque()
         print(" Produto atualizado com sucesso!")
     else:
-        print(" Produto não encontrado.")
+            print(" Produto não encontrado.")
+    
+def buscar_produto():
+        termo = input("Digite o nome ou parte do nome do produto: ").lower()
+        resultados = [p for p in estoque.values() if termo in p['nome'].lower()]
+        if resultados:
+            print("\n🔎 Resultados da busca:")
+            for item in resultados:
+                print(f"Nome: {item['nome']} | Quantidade: {item['quantidade']} | Local: {item['local']}")
+        else:
+            print("⚠️ Nenhum produto encontrado.")
+            
+def gerar_relatorio():
+    with open("relatorio_estoque.txt", "w", encoding="utf-8") as f:
+        f.write("📋 Relatório de Estoque\n\n")
+        for cod, dados in estoque.items():
+            f.write(f"Código: {cod} | Nome: {dados['nome']} | "
+                    f"Quantidade: {dados['quantidade']} | Local: {dados['local']}\n")
+    print("✅ Relatório gerado: relatorio_estoque.txt")
 
 
+def backup():
+    if os.path.exists(ARQUIVO):
+        shutil.copy(ARQUIVO, "backup_estoque.json")
+        print("✅ Backup criado com sucesso (backup_estoque.json).")
+    else:
+        print("⚠️ Nenhum dado para backup.")
 # -------- MENU PRINCIPAL --------
 def menu():
     while True:
@@ -97,6 +130,11 @@ def menu():
         print("2 - Registrar Entrada")
         print("3 - Registrar Saída")
         print("4 - Consultar Estoque")
+        print("5 - Editar Produto")
+        print("6 - Buscar Produto")
+        print("7 - Gerar Relatório")
+        print("8 - Fazer Backup")
+        
         print("0 - Sair")
         
         opcao = input("Escolha uma opção: ")
@@ -109,6 +147,14 @@ def menu():
             registrar_saida()
         elif opcao == "4":
             consultar_estoque()
+        elif opcao == "5":
+            editar_produto()
+        elif opcao == "6":
+            buscar_produto()
+        elif opcao == "7":
+            gerar_relatorio()
+        elif opcao == "8":
+            backup()
         elif opcao == "0":
             print("👋 Saindo do sistema...")
             break

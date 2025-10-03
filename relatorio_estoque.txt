@@ -1,0 +1,4 @@
+📋 Relatório de Estoque
+
+Código: leite | Nome: leite jussara | Quantidade: 2 | Local: Prateleira A3
+Código: 1234 | Nome: FARINHA DE MILHO | Quantidade: 3 | Local: PRATELEIRA B4
